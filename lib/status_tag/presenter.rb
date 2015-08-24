@@ -17,6 +17,9 @@ module StatusTag
     # Override constants in subclasses
     ORDERED_CHOICES = [StatusTag::Choice.new]
     CSS_CLASS = [] # A CSS class or classes to assign to all tags generated with the presenter
+    DECIDE_ON = :object # or :self, which will send the messages to the presenter class
+                        #   (which has an internal reference to object) and would allow more complicated logic that
+                        #   pertains to the view, not the model.
 
     attr_accessor :object,  # e.g. an instance of the User class
                   :aspect   # e.g. "state", "status" or some other descriptive name for this particular status tag
@@ -31,7 +34,11 @@ module StatusTag
     end
 
     def decide
-      decider.decide(object)
+      if self::DECIDE_ON == :object
+        decider.decide(object)
+      else
+        decider.decide(self)
+      end
     end
 
     # An alternative to overriding the constant in subclasses is to override this method.
