@@ -87,10 +87,10 @@ describe StatusTag do
           class StatusTag::MyArrayPresenter < StatusTag::Presenter
             DECIDE_ON = :self
             ORDERED_CHOICES = [
-                StatusTag::Choice.new(name: "empty?", text: "pigs fly", klass: "fence"),
+                StatusTag::Choice.new(name: "empty?", text: "pigs fly", css_class: "fence"),
                 StatusTag::Choice.new(name: "flatten!", text: "a dingo ate", noop: true),
-                StatusTag::Choice.new(name: "foo", text: "ants march", klass: "bar"),
-                StatusTag::Choice.new(name: nil, text: "COWS MOO", klass: "cheese")
+                StatusTag::Choice.new(name: "foo", text: "ants march", css_class: "bar"),
+                StatusTag::Choice.new(name: nil, text: "COWS MOO", css_class: "cheese")
             ]
             def empty?
               object.empty?
@@ -155,9 +155,9 @@ describe StatusTag do
             module StatusTag; module ArrayPresenters;
               class SwarthyMooglePresenter < StatusTag::Presenter
                 ORDERED_CHOICES = [
-                    StatusTag::Choice.new(name: "empty?", text: "pigs fly", klass: "fence"),
+                    StatusTag::Choice.new(name: "empty?", text: "pigs fly", css_class: "fence"),
                     StatusTag::Choice.new(name: "flatten!", text: "a dingo ate", noop: true),
-                    StatusTag::Choice.new(name: nil, text: "COWS MOO", klass: "cheese")
+                    StatusTag::Choice.new(name: nil, text: "COWS MOO", css_class: "cheese")
                 ]
                 CSS_CLASS = %w(label label-default)
               end;

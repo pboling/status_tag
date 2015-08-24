@@ -38,14 +38,15 @@ module StatusTag
   # However, does not currently support object being multiple records like Rails' `content_tag_for` does
   def self.status_tag_signature_for(tag, object, prefix = false, options = nil)
     presenter = status_tag_presenter(object: object, aspect: prefix)
-    choice = presenter.decide
-    return choice.text, nil if choice.noop?
+    presenter.decide
+    text = presenter.text
+    return text, nil if presenter.noop?
     options ||= {}
     options[:class] = Array(options[:class])
     options[:class].concat(Array(presenter.class.css_class(object, prefix)))
-    options[:class] << choice.klass
+    options[:class] << presenter.css_class if presenter.css_class
     options[:class] = options[:class].join(" ")
-    return choice.text, [tag, presenter.object, presenter.aspect, options]
+    return text, [tag, presenter.object, presenter.aspect, options]
   end
 
 end

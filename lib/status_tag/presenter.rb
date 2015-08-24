@@ -20,12 +20,15 @@ module StatusTag
     DECIDE_ON = :object # or :self, which will send the messages to the presenter class
                         #   (which has an internal reference to object) and would allow more complicated logic that
                         #   pertains to the view, not the model.
+    CHOICE_ON = :object # or :self, which will send the messages to the presenter class
+                        #   (which has an internal reference to object) and would allow more complicated logic that
+                        #   pertains to the view, not the model.
 
     attr_accessor :object,  # e.g. an instance of the User class
                   :aspect   # e.g. "state", "status" or some other descriptive name for this particular status tag
                             #       Defaults to nil, so by default there is only one StatusTag presenter allowed per object class,
                             #       as the aspect provides a namespace for additional presenters.
-    attr_reader :decider
+    attr_reader :decider, :choice
 
     def initialize(object:, aspect: nil)
       @object = object
@@ -34,11 +37,31 @@ module StatusTag
     end
 
     def decide
-      if (self.class)::DECIDE_ON == :object
-        decider.decide(object)
+      @choice = if (self.class)::DECIDE_ON == :object
+                  decider.decide(object)
+                else
+                  decider.decide(self)
+                end
+    end
+
+    def text
+      return "" unless choice
+      if choice.text.is_a?(Symbol)
+        receiver = (self.class)::CHOICE_ON == :object ? object : self
+        receiver.send(choice.text)
       else
-        decider.decide(self)
+        choice.text
       end
+    end
+
+    def noop?
+      return true unless choice
+      choice.noop?
+    end
+
+    def css_class
+      return nil unless choice
+      choice.css_class
     end
 
     # An alternative to overriding the constant in subclasses is to override this method.
