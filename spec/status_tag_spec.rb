@@ -94,10 +94,10 @@ describe StatusTag do
             expect(sig).to eq [:span, [1, 2, 3], nil, {:class=>""}]
           }
         end
-        context "DECIDE_ON = :self" do
+        context "CHOICE_NAME_MESSAGE_RECEIVER = :self" do
           class MyArray < Array; end
           class StatusTag::MyArrayPresenter < StatusTag::Presenter
-            DECIDE_ON = :self
+            CHOICE_NAME_MESSAGE_RECEIVER = :self
             ORDERED_CHOICES = [
                 StatusTag::Choice.new(name: "empty?", text: "pigs fly", css_class: "fence"),
                 StatusTag::Choice.new(name: "flatten!", text: "a dingo ate", noop: true),

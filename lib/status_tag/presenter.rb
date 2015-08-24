@@ -17,12 +17,14 @@ module StatusTag
     # Override constants in subclasses
     ORDERED_CHOICES = [StatusTag::Choice.new]
     CSS_CLASS = [] # A CSS class or classes to assign to all tags generated with the presenter
-    DECIDE_ON = :object # or :self, which will send the messages to the presenter class
-                        #   (which has an internal reference to object) and would allow more complicated logic that
-                        #   pertains to the view, not the model.
-    CHOICE_ON = :object # or :self, which will send the messages to the presenter class
-                        #   (which has an internal reference to object) and would allow more complicated logic that
-                        #   pertains to the view, not the model.
+
+    # RECEIVER CONFIGURATION
+    #   :object sends the messages to the object passed into the initializer
+    #   :self sends the messages to the to the presenter class instance
+    #     (which has an internal reference to object) and would allow more complicated logic that
+    #     pertains to the view, not the model.
+    CHOICE_NAME_MESSAGE_RECEIVER = :object
+    CHOICE_TEXT_MESSAGE_RECEIVER = :object
 
     attr_accessor :object,  # e.g. an instance of the User class
                   :aspect   # e.g. "state", "status" or some other descriptive name for this particular status tag
@@ -38,7 +40,7 @@ module StatusTag
     end
 
     def decide
-      @choice = if (self.class)::DECIDE_ON == :object
+      @choice = if (self.class)::CHOICE_NAME_MESSAGE_RECEIVER == :object
                   decider.decide(object)
                 else
                   decider.decide(self)
@@ -48,7 +50,7 @@ module StatusTag
     def text
       return "" unless choice
       if choice.text.is_a?(Symbol)
-        receiver = (self.class)::CHOICE_ON == :object ? object : self
+        receiver = (self.class)::CHOICE_TEXT_MESSAGE_RECEIVER == :object ? object : self
         receiver.send(choice.text)
       else
         choice.text
