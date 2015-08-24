@@ -9,11 +9,23 @@ describe StatusTag do
 
   describe ".status_tag_presenter" do
     let(:aspect) { nil }
-    let(:presenter) { StatusTag.status_tag_presenter(object: object, aspect: aspect) }
+    let(:options) { nil }
+    let(:object) { nil }
+    let(:presenter) { StatusTag.status_tag_presenter(object: object, aspect: aspect, options: options) }
     context "null case" do
-      let(:object) { nil }
       it("returns a StatusTag::Presenter") { expect(presenter).to be_a StatusTag::Presenter }
       it("returns a StatusTag::NullPresenter") { expect(presenter).to be_a StatusTag::NullPresenter }
+      it("options are empty hash") {
+        expect(presenter.options).to be_a Hash
+        expect(presenter.options).to be_empty
+      }
+    end
+    context "with options" do
+      let(:options) { { bash: :wins } }
+      it("options are empty hash") {
+        expect(presenter.options).to be_a Hash
+        expect(presenter.options).to eq({ bash: :wins })
+      }
     end
     context "with non-nil object" do
       context "missing custom presenter" do
@@ -137,7 +149,7 @@ describe StatusTag do
               text, sig = signature
               expect(text).to eq "null presenter"
               expect(sig).to be_a Array
-              expect(sig).to eq [:span, [1, 2, 3], nil, {:class=>""}]
+              expect(sig).to eq [:span, [1, 2, 3], "swarthy", {:class=>""}]
             }
           end
           context "with customer aspect presenter" do

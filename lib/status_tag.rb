@@ -9,7 +9,7 @@ module StatusTag
 
   extend StatusTag::Utils
 
-  def self.status_tag_presenter(object:, aspect: nil)
+  def self.status_tag_presenter(object:, aspect: nil, options: {})
     # Support for STI and namespaced Objects is accomplished by
     #   first checking for a Presenter definition at the STI class level
     #   and then checking for a definition at the super class (generic) level.
@@ -19,25 +19,25 @@ module StatusTag
       if aspect.nil?
         # recommend locating class definition at app/presenters/status_tag/<klass>_presenter.rb
         presenter_class = class_from_string("StatusTag::#{memo}Presenter")
-        presenter = presenter_class.new(object: object) if presenter_class
+        presenter = presenter_class.new(object: object, options: options) if presenter_class
       else
         presenter_class = class_from_string("StatusTag::#{memo}Presenters::#{camelize_underscored(aspect.to_s)}Presenter")
         # recommend locating class definition at app/presenters/status_tag/<klass>_presenters/<aspect>_presenter.rb
-        presenter = presenter_class.new(object: object, aspect: aspect) if presenter_class
+        presenter = presenter_class.new(object: object, aspect: aspect, options: options) if presenter_class
       end
       break if presenter
       last_namespace = memo.rindex("::")
       memo = memo[0..(last_namespace-1)] if last_namespace # level up!
       memo
     end
-    presenter = NullPresenter.new(object: object) unless presenter
+    presenter = NullPresenter.new(object: object, aspect: aspect, options: options) unless presenter
     presenter
   end
 
   # Same signature as Rails' `content_tag_for`.
   # However, does not currently support object being multiple records like Rails' `content_tag_for` does
-  def self.status_tag_signature_for(tag, object, prefix = false, options = nil)
-    presenter = status_tag_presenter(object: object, aspect: prefix)
+  def self.status_tag_signature_for(tag, object, prefix = false, options = nil, status_tag_options = {})
+    presenter = status_tag_presenter(object: object, aspect: prefix, options: status_tag_options)
     presenter.decide
     text = presenter.text
     return text, nil if presenter.noop?

@@ -28,12 +28,13 @@ module StatusTag
                   :aspect   # e.g. "state", "status" or some other descriptive name for this particular status tag
                             #       Defaults to nil, so by default there is only one StatusTag presenter allowed per object class,
                             #       as the aspect provides a namespace for additional presenters.
-    attr_reader :decider, :choice
+    attr_reader :decider, :choice, :options
 
-    def initialize(object:, aspect: nil)
+    def initialize(object:, aspect: nil, options: {})
       @object = object
       @aspect = aspect
       @decider = StatusTag::Decider.new(ordered_choices: self.class.ordered_choices(object, aspect))
+      @options = options || {}
     end
 
     def decide
