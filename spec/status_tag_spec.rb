@@ -82,6 +82,53 @@ describe StatusTag do
             expect(sig).to eq [:span, [1, 2, 3], nil, {:class=>""}]
           }
         end
+        context "DECIDE_ON = :self" do
+          class MyArray < Array; end
+          class StatusTag::MyArrayPresenter < StatusTag::Presenter
+            DECIDE_ON = :self
+            ORDERED_CHOICES = [
+                StatusTag::Choice.new(name: "empty?", text: "pigs fly", klass: "fence"),
+                StatusTag::Choice.new(name: "flatten!", text: "a dingo ate", noop: true),
+                StatusTag::Choice.new(name: "foo", text: "ants march", klass: "bar"),
+                StatusTag::Choice.new(name: nil, text: "COWS MOO", klass: "cheese")
+            ]
+            def empty?
+              object.empty?
+            end
+            def flatten!
+              object.flatten!
+            end
+            def foo
+              object[0] == 1
+            end
+          end
+          context "chooses first" do
+            let(:object) { MyArray.new }
+            it("returns the text and signature") {
+              text, sig = signature
+              expect(text).to eq "pigs fly"
+              expect(sig).to be_a Array
+              expect(sig).to eq [:span, object, nil, {:class=>"fence"}]
+            }
+          end
+          context "chooses second" do
+            let(:object) { MyArray.new([[1]]) }
+            it("returns the text and signature") {
+              text, sig = signature
+              expect(text).to eq "a dingo ate"
+              expect(sig).to be_nil
+            }
+          end
+          context "chooses third" do
+            let(:object) { MyArray.new([1]) }
+            it("returns the text and signature") {
+              text, sig = signature
+              expect(text).to eq "ants march"
+              expect(sig).to be_a Array
+              expect(sig).to eq [:span, object, nil, {:class=>"bar"}]
+            }
+          end
+        end
         context "with an aspect" do
           context "missing custom aspect presenter" do
             let(:object) { [1,2,3] }

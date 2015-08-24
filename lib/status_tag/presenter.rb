@@ -34,7 +34,7 @@ module StatusTag
     end
 
     def decide
-      if self::DECIDE_ON == :object
+      if (self.class)::DECIDE_ON == :object
         decider.decide(object)
       else
         decider.decide(self)
